@@ -20,7 +20,7 @@ This Jenkins job will: </br>
 3. A DynamoDB table with **LockID** as partion key of type string.
 
 ### Note:github url to create s3 bucket and dynamodb table: 
-Docet-USA/Terraform-module-for-s3-data-replication at maintain-tfstate-in-s3 (worldpay.com)
+(https://github.com/pramodksahoo/terraform-module-for-s3-data-replication) at maintain-tfstate-in-s3 
 
 
 
