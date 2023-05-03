@@ -1,0 +1,55 @@
+#read only role
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dashboard-read-only
+rules:
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - '*'
+    resources:
+      - bindings
+      - componentstatuses
+      - configmaps
+      - deployments
+      - endpoints
+      - events
+      - namespaces
+      - pods
+      - pods/status
+      - pods/eviction
+      - pods/log
+      - pods/status
+      - podtemplates
+      - replicasets
+      - serviceaccounts
+      - services
+      - services/status
+      - ingresses
+      - cronjobs
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - '*'
+---
+#  Dashboard read only Role Binding
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dashboard-read-only
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dashboard-read-only
+subjects:
+- kind: ServiceAccount
+  name: dashboard-read-only
+  namespace: default

@@ -1,0 +1,26 @@
+- name: UnDeploy from K8s Cluster
+  hosts: localhost
+  vars_files:
+    - ./vars.yaml
+  tasks:   
+  - name: connect to the cluster
+    shell: |
+      aws eks update-kubeconfig --name {{eks_cluster_name}} --region {{region}}
+  - name:  Remove cloned repo
+    shell: |
+      rm -rf external-snapshotter
+    ignore_errors: true
+  - name: delete sa for xld and developer in kubernetes
+    shell: |
+      kubectl delete -f ./rbac/service-account.yml
+    ignore_errors: true
+  - name:  Delete RBAC for XLD
+    shell: |
+      kubectl delete -f ./rbac/xld.yml -n {{namespace_name}}
+    ignore_errors: true
+  - name: Delete RBAC for Developer - readonly
+    shell: |
+      kubectl delete -f ./rbac/developer.yml -n {{namespace_name}}
+    ignore_errors: true
+   
+      

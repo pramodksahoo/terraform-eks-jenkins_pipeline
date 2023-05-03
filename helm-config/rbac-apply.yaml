@@ -1,0 +1,53 @@
+- name: Deploy to K8s Cluster
+  hosts: localhost
+  vars_files:
+    - ./vars.yaml
+  tasks:
+  - name: connect to the cluster
+    shell: |
+      aws eks update-kubeconfig --name {{eks_cluster_name}} --region {{region}}
+  - name: Update coredns config-map
+    shell: |
+      kubectl apply -f coredns-configmap.yml     
+  - name: clone snapshot controller repo
+    shell: |
+      git clone https://github.com/kubernetes-csi/external-snapshotter
+    ignore_errors: true
+  - name: create crd
+    shell: |
+      kubectl kustomize ./external-snapshotter/client/config/crd | kubectl create -f -  
+    ignore_errors: true
+  - name: create snapshot controller
+    shell: |
+      kubectl -n kube-system kustomize ./external-snapshotter/deploy/kubernetes/snapshot-controller | kubectl create -f - 
+    ignore_errors: true
+  - name: Restart the velero pod
+    shell: |
+      kubectl scale deployment velero -n velero --replicas=0 
+  - name: Restart the velero pod
+    shell: |
+      kubectl scale deployment velero -n velero --replicas=1  
+  - name: Create ns in kubernetes
+    shell: |
+      kubectl create ns  {{namespace_name}} 
+    ignore_errors: true
+  - name: Create sa for xld and developer and dashboard-readonly in kubernetes
+    shell: |
+      kubectl apply -f ./rbac/service-account.yml
+    ignore_errors: true
+  - name: Create RBAC for XLD
+    shell: |
+      kubectl apply -f ./rbac/xld.yml -n {{namespace_name}}
+    ignore_errors: true
+  - name: Create  RBAC for Developer/Devops
+    shell: |
+      kubectl apply -f ./rbac/developer.yml -n {{namespace_name}}
+    ignore_errors: true
+  - name: Create  RBAC for dashboard-readonly
+    shell: |
+      kubectl apply -f ./rbac/dashboard-readonly.yaml -n {{namespace_name}}
+    ignore_errors: true
+      
+      
+      
+      

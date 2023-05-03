@@ -1,0 +1,96 @@
+# Docetus Role - all namespaces
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: docetus
+rules:
+- apiGroups:
+  - ""
+  - apps
+  - batch
+  resources:
+  - configmaps
+  - deployments
+  - deployments/scale
+  - replicasets
+  - replicationcontrollers
+  - replicationcontrollers/scale
+  - replicationcontrollers/status
+  - pods
+  - pods/attach
+  - pods/binding
+  - pods/eviction
+  - pods/exec
+  - pods/log
+  - pods/portforward
+  - pods/proxy
+  - pods/status
+  - podtemplates
+  - secrets
+  - services
+  - horizontalpodautoscalers
+  verbs:
+  - '*'
+
+- apiGroups:
+  - '*'
+  resources:
+  - ingresses
+  verbs:
+  - '*'
+
+
+- apiGroups:
+  - ""
+  - apps
+  - batch
+  - rbac.authorization.k8s.io
+  resources:
+  - serviceaccounts
+  - nodes
+  - namespaces
+  - namespaces/finalize
+  - namespaces/status
+  - persistentvolumeclaims
+  - persistentvolumeclaims/status
+  - persistentvolumes
+  - persistentvolumes/status
+  - resourcequotas
+  - componentstatuses
+  - endpoints
+  - events
+  - limitranges
+  - roles
+  - rolebindings
+  - clusterroles
+  - clusterrolebindings
+  - daemonsets
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+
+
+
+---
+# Docetus Cluster Role Binding
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: docetus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: docetus
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: default:docetus
+
+- kind: ServiceAccount
+  name: docetus
+  namespace: default
